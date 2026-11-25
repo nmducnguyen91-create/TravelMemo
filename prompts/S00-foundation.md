@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S00 — Foundation. Tasks: Verify environment; Initialize Expo safely; Git and folder structure; Strict TS and lint; SQLite migration runner; Device smoke test. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

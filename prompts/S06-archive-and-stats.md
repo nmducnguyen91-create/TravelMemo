@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S06 — Archive and stats. Tasks: Coverage statistics; Snapshot and manifest; Archive export; Staged restore and rollback; Encryption review; Round-trip tests. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

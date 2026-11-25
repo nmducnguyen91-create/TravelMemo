@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S01 — Design system. Tasks: Tokens and themes; Shared components; Five-tab navigation; Empty/error states; Accessibility review. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

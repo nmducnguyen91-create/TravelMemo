@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S07 — QA. Tasks: Functional and migration tests; Offline and permissions; Accessibility and performance; Security review; Device regression. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

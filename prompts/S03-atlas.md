@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S03 — Atlas. Tasks: Select licensed datasets; Version geography; Projection and SVG; Pan zoom and drilldown; Coverage calculation; Historical view; Performance test. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

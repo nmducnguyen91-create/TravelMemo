@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S05 — Memories. Tasks: Photo picker and managed storage; Hash and metadata; Thumbnails and gallery; Journal and search; Media integrity tests. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

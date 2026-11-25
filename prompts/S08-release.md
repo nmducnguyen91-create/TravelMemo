@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S08 — Release. Tasks: Icon and splash; Signing and preview build; Device acceptance; Restore rehearsal; Owner release approval. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

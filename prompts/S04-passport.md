@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S04 — Passport. Tasks: Repositories and templates; Idempotent generation; Backfill visits; Covers and pages; Stamp detail/export; Duplicate and layout tests. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.

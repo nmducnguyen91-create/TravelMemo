@@ -1,0 +1,1 @@
+Read CLAUDE.md and docs/PROJECT_STATE.md. Plan S02 — Journey core. Tasks: Repositories; Journey CRUD; Visit confirmation; Foreground GPS fallback; Companions; Timeline and soft delete; Integration tests. Use docs/TASKS.md and relevant specs. Execute only the next approved task; validate before proceeding. Report in Vietnamese.
