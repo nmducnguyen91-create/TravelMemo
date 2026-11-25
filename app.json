@@ -22,7 +22,12 @@
     },
     "web": {
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "TravelMemo",
+      "shortName": "TravelMemo",
+      "themeColor": "#173B34",
+      "backgroundColor": "#F8F7F3",
+      "lang": "vi"
     },
     "plugins": [
       "expo-router",
@@ -33,8 +38,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ],
-      "expo-sqlite"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

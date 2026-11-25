@@ -1,19 +1,23 @@
 # Project state
-Updated 2026-11-25. Current sprint S00 (Foundation). Next task: S00-06 device smoke test (needs owner's iPhone), then S01-01.
+Updated 2026-11-25. Delivery: responsive web app (ADR-002). Sprints S00–S07 implemented and verified in the cloud;
+S08 web release steps prepared, publishing awaits the owner.
 
-## Verified
-- S00-01 Environment (cloud build machine): Node 22.23.5, npm 10.9.9, Git 2.43. Owner's Windows machine not yet verified.
-- S00-02 Expo SDK 58 initialized in a sibling temp directory and integrated without overwriting kit docs. Template demo code, AGENTS.md and template .claude settings not imported.
-- S00-03 Git repository initialized locally; folders app/, src/database, src/design-system, tests/. No remote yet (owner will create GitHub repo).
-- S00-04 TypeScript strict (+ noUncheckedIndexedAccess, exactOptionalPropertyTypes); ESLint (eslint-config-expo) with rule blocking expo-sqlite imports in UI.
-- S00-05 SQLite migration runner: per-migration transaction, checksum ledger (immutable migrations), downgrade refusal, FK enforcement + foreign_key_check. Migration 0001 = specs/schema-v1.sql.
-
-## Checks (2026-11-25)
-- `npm run typecheck` pass; `npm run lint` pass; `npm test` 9/9 pass (Node built-in SQLite 3.54).
-- `npx expo export --platform ios` bundles successfully (2.6 MB Hermes bundle). Not run on a device.
+## Verified (2026-11-25)
+- `npm run typecheck` pass · `npm run lint` pass · `npm test` 34/34 pass (unit + integration on sql.js, the same engine the app ships).
+- `npx expo export --platform web` builds (static SPA, ~4 MB incl. 0.5 MB world map and 0.6 MB SQLite WASM).
+- Browser E2E (Playwright, Chromium, desktop 1280px and phone 390px; tests/e2e): full journey/visit/journal/photo/passport/atlas/stats flow,
+  reload persistence, encrypted backup, wrong-password rejection, restore into a fresh browser, second-tab lock, dark mode,
+  map tap/zoom/drag, stamp SVG export, service worker registration, zero requests leaving the origin.
+- Performance (synthetic 2,000 trips×visits): stats 23 ms, trip list 6 ms, coverage 5 ms, passport 30 ms, search <1 ms, world projection 20 ms (Node; device numbers will differ).
 
 ## Not verified
-- S00-06 on a real iPhone (Expo Go). Runtime behavior of expo-sqlite on device.
-- `npx expo install` compatibility check (expo.dev API blocked in cloud); versions taken from expo's bundledNativeModules.json.
+- Real iPhone Safari / Android Chrome (storage eviction, Add to Home Screen, geolocation prompt, HEIC display).
+- Owner's Windows machine build.
+- Native iOS build (not in scope after ADR-002).
 
-Pending decisions: bundle ID, Apple Developer membership, licensed geographic datasets, encryption implementation.
+## Pending owner decisions
+- Where to host (GitHub Pages workflow included, manual trigger) and whether the repo is public or private.
+- Licensed dataset for the 34 provinces (post 07/2025) to add as a new geography version.
+- Bundle ID / Apple Developer only if a native iOS app is wanted later.
+
+Next task: owner acceptance on real devices (S08-03), then restore rehearsal on a second device (S08-04).
