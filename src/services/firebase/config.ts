@@ -40,8 +40,8 @@ export function resolveFirebaseConfig(): Promise<FirebaseOptions | null> {
         apiKey: json.apiKey,
         projectId: json.projectId,
         appId: json.appId,
-        // Same-origin auth handler (Hosting serves /__/auth/*): keeps popup sign-in working on Safari/iPhone.
-        authDomain: location.host,
+        // Must stay the project's own auth domain: Google's OAuth client only allows its /__/auth/handler as redirect URI.
+        authDomain: json.authDomain ?? `${json.projectId}.firebaseapp.com`,
         storageBucket: json.storageBucket ?? `${json.projectId}.firebasestorage.app`,
         messagingSenderId: json.messagingSenderId ?? '',
       };
