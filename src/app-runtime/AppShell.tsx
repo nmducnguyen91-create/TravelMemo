@@ -8,12 +8,13 @@ import { AppText, spacing, touchTarget, useTheme } from '../design-system';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-export const TABS: readonly { href: '/' | '/atlas' | '/passport' | '/journeys' | '/library'; label: string; icon: IconName; match: RegExp }[] = [
+export const TABS: readonly { href: '/' | '/atlas' | '/passport' | '/journeys' | '/library' | '/settings'; label: string; icon: IconName; match: RegExp }[] = [
   { href: '/', label: 'Home', icon: 'home-outline', match: /^\/$/ },
   { href: '/atlas', label: 'Atlas', icon: 'earth-outline', match: /^\/atlas/ },
   { href: '/passport', label: 'Passport', icon: 'book-outline', match: /^\/(passport|stamp)/ },
   { href: '/journeys', label: 'Journeys', icon: 'map-outline', match: /^\/(journeys|journey|visit)/ },
-  { href: '/library', label: 'Library', icon: 'images-outline', match: /^\/(library|journal|photo)/ },
+  { href: '/library', label: 'Library', icon: 'images-outline', match: /^\/(library|journal|photo|ai)/ },
+  { href: '/settings', label: 'Settings', icon: 'settings-outline', match: /^\/settings/ },
 ];
 
 export const WIDE_BREAKPOINT = 900;

@@ -7,6 +7,6 @@ export { Screen } from './components/Screen';
 export { EmptyState, ErrorState, LoadingState } from './components/States';
 export { SearchSelect, type Option } from './components/SearchSelect';
 export { TextField } from './components/TextField';
-export { useTheme } from './theme';
+export { useTheme, useThemePreference, type ThemePreference } from './theme';
 export { palette, radius, spacing, touchTarget, typography } from './tokens';
 export { brand } from './tokens';

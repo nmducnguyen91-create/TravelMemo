@@ -87,3 +87,10 @@ Web delivery per ADR-002. Items marked [x] are implemented and verified in the c
 - [x] S10-03 Destination suggestions from photo GPS/EXIF (suggestion only)
 - [x] S10-04 Google Maps link paste (coordinates, name, country/province) and PWA share target
 - [ ] S10-05 Check share target on a real Android phone with the installed app
+
+## S11 — Settings tab and AI assistant (ADR-004)
+- [x] S11-01 Settings tab (theme, AI, sync, backup, privacy); Library keeps memories and stats
+- [x] S11-02 Bring-your-own Claude key: device-only storage, masked, test, delete; AI off by default
+- [x] S11-03 AI journal draft per journey (preview data, edit, save via journal form)
+- [x] S11-04 AI Q&A over travel history and next-destination suggestions
+- [ ] S11-05 Owner check with a real key on the live site

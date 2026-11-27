@@ -50,7 +50,7 @@ function BootGate() {
             headerBackTitle: 'Quay lại',
           }}
         >
-          {['index', 'atlas/index', 'passport/index', 'journeys/index', 'library/index'].map((name) => (
+          {['index', 'atlas/index', 'passport/index', 'journeys/index', 'library/index', 'settings/index'].map((name) => (
             <Stack.Screen key={name} name={name} options={{ headerShown: false, animation: 'none' }} />
           ))}
         </Stack>
