@@ -19,14 +19,12 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ vars.FIREBASE_PROJECT_ID != '' && vars.GCP_WIF_PROVIDER != '' }}
     env:
-      EXPO_PUBLIC_FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
-      EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}
-      EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
-      EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ vars.FIREBASE_STORAGE_BUCKET }}
-      EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.FIREBASE_MESSAGING_SENDER_ID }}
-      EXPO_PUBLIC_FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+      # Identifiers only, not credentials. The app reads its Firebase web config at runtime from
+      # /__/firebase/init.json on Firebase Hosting, so no API key is stored in the repository or CI.
+      FIREBASE_PROJECT_ID: travelmemo-ce0d6
+      GCP_WIF_PROVIDER: projects/1091313995838/locations/global/workloadIdentityPools/github/providers/github-oidc
+      GCP_DEPLOY_SERVICE_ACCOUNT: github-deployer@travelmemo-ce0d6.iam.gserviceaccount.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,7 +38,7 @@ jobs:
       - run: npx expo export --platform web
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
+          service_account: ${{ env.GCP_DEPLOY_SERVICE_ACCOUNT }}
       - name: Deploy hosting
-        run: npx --yes firebase-tools@14 deploy --only hosting --project "${{ vars.FIREBASE_PROJECT_ID }}" --non-interactive
+        run: npx --yes firebase-tools@14 deploy --only hosting --project "$FIREBASE_PROJECT_ID" --non-interactive

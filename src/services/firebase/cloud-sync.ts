@@ -1,4 +1,4 @@
-import { initializeApp, type FirebaseApp } from 'firebase/app';
+import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import {
   browserLocalPersistence,
   GoogleAuthProvider,
@@ -12,7 +12,7 @@ import {
 } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
-import { firebaseConfig } from './config';
+import { resolveFirebaseConfig } from './config';
 import { FirestoreRemote } from './firestore-remote';
 
 export interface CloudAccount {
@@ -28,11 +28,11 @@ interface Connection {
 }
 
 let connection: Connection | null = null;
+let config: FirebaseOptions | null = null;
 
 /** Lazily connects; returns null when the build has no Firebase config (sync then stays off). */
 function connect(): Connection | null {
   if (connection) return connection;
-  const config = firebaseConfig();
   if (!config) return null;
   const app = initializeApp(config);
   const auth = initializeAuth(app, { persistence: browserLocalPersistence, popupRedirectResolver: browserPopupRedirectResolver });
@@ -57,7 +57,13 @@ function signInMessage(error: unknown): string {
 const toAccount = (u: User): CloudAccount => ({ uid: u.uid, email: u.email, name: u.displayName });
 
 export const cloud = {
-  available: (): boolean => firebaseConfig() !== null,
+  /** Resolves the project config once; sync is unavailable when there is none. */
+  async init(): Promise<boolean> {
+    config = await resolveFirebaseConfig();
+    return config !== null;
+  },
+
+  available: (): boolean => config !== null,
 
   /** Calls back with the signed-in account (or null) now and on every change. */
   watchAccount(listener: (account: CloudAccount | null) => void): () => void {
