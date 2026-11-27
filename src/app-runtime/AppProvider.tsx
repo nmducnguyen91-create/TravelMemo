@@ -6,6 +6,7 @@ import { migrations } from '../database/migrations';
 import { IdbMediaStore } from '../services/web/idb-media-store';
 import { acquireSingleTabLock } from '../services/web/single-tab';
 import { openWebDatabase, type WebDatabase } from '../services/web/web-database';
+import { startCloudSync, type CloudSyncController } from './cloud-sync';
 import { geography } from './geography';
 
 /** Transient UI state only: a revision counter that tells screens to re-read SQLite after a write. */
@@ -18,6 +19,8 @@ export interface AppRuntime {
   readonly app: AppServices;
   readonly web: WebDatabase;
   readonly schemaVersion: number;
+  /** Optional multi-device sync (ADR-003); idle unless the owner turns it on. */
+  readonly cloudSync: CloudSyncController;
   /** Runs a write, then refreshes every screen. */
   mutate<T>(fn: (app: AppServices) => Promise<T>): Promise<T>;
 }
@@ -41,15 +44,18 @@ export function useBoot(): Boot {
       const web = await openWebDatabase();
       const app = createAppServices(web.driver, new IdbMediaStore(), geography);
       await app.initialize();
+      const cloudSync = startCloudSync(web.driver, migrations.length, bump);
       const runtime: AppRuntime = {
         app,
         web,
         schemaVersion: migrations.length,
+        cloudSync,
         mutate: async (fn) => {
           try {
             return await fn(app);
           } finally {
             bump();
+            cloudSync.noteLocalWrite();
           }
         },
       };

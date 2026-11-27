@@ -14,3 +14,9 @@ V1.0 starter kit: consolidated planning specifications; no app implementation.
 - Photos (selected import, SHA-256 dedup, thumbnails, integrity check), journal with search.
 - Lifetime statistics; backup archive with manifest + checksums, optional AES-256-GCM encryption, staged validation, atomic restore and undo.
 - Migrations 0002 (app columns, default profile/passports) and 0003 (indexes). 34 automated tests + browser E2E.
+
+## 2026-11-27 — Multi-device sync (S09, ADR-003)
+- Optional Google sign-in and Firestore sync (Firebase Spark plan), Library → Đồng bộ thiết bị.
+- Migration 0004 (sync_outbox, sync_meta, sync_parked); triggers installed only when sync is turned on.
+- Per-row last-writer-wins sync engine with deferred foreign keys and parking of orphan rows; 6 tests.
+- `firestore.rules` (owner-only, shape-validated), `firebase.json`, `.env.example`; Pages workflow reads Firebase repository variables.

@@ -1,12 +1,15 @@
 import { router } from 'expo-router';
 
 import { useApp, useData } from '@/app-runtime/AppProvider';
+import { useCloudSync } from '@/app-runtime/cloud-sync';
 import { Card, ListRow, Screen } from '@/design-system';
 import { Section } from '@/features/common/Section';
 
 /** Library holds memories, statistics and settings (Settings/Profile live here per V1 decision). */
 export default function LibraryScreen() {
   const { web } = useApp();
+  const sync = useCloudSync();
+  const syncOn = sync.account !== null && sync.linked === sync.account.uid;
   const counts = useData(async (app) => {
     const s = await app.stats();
     return { photos: s.photos, journal: s.journalEntries, companions: (await app.companions.list()).length };
@@ -27,6 +30,11 @@ export default function LibraryScreen() {
       </Section>
       <Section title="Dữ liệu và cài đặt">
         <Card>
+          <ListRow
+            title="Đồng bộ thiết bị"
+            subtitle={syncOn ? `Đang bật · ${sync.account?.email ?? ''}` : 'Tắt · Dùng tài khoản Google để đồng bộ giữa các máy'}
+            onPress={() => router.push('/library/sync')}
+          />
           <ListRow title="Sao lưu và khôi phục" subtitle="Xuất toàn bộ dữ liệu ra một tệp, khôi phục trên máy khác" onPress={() => router.push('/library/backup')} />
           <ListRow
             title="Quyền riêng tư và nguồn dữ liệu"
