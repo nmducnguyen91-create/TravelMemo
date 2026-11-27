@@ -1,5 +1,5 @@
 # Project state
-Updated 2026-11-27 (S11 Settings tab and AI assistant). Delivery: responsive web app (ADR-002). Sprints S00–S07 implemented and verified in the cloud;
+Updated 2026-11-27 (S12 visits without a date). Delivery: responsive web app (ADR-002). Sprints S00–S07 implemented and verified in the cloud;
 S08 web release steps prepared, publishing awaits the owner.
 
 ## Verified (2026-11-25)
@@ -37,6 +37,14 @@ S08 web release steps prepared, publishing awaits the owner.
   fallbacks and no coordinates; zero other external requests, zero console errors. flow.js, extra.js, intake.js re-run: pass.
 - Not verified: a real call to api.anthropic.com with a real key (no key in the cloud; mocked), real-phone keyboard behaviour on the key field.
 
+## Visits without a date (S12) — 2026-11-27
+- Destination form has a fourth date option **Không rõ ngày** (visited many times / cannot remember); the date field is hidden.
+- Migration 0005 adds `visits.date_unknown` (0/1). `local_date` stays NOT NULL and holds the recording day, used only for ordering;
+  `date_precision` is stored as 'year'. Domain `DatePrecision` gains 'unknown'; lists show "Không rõ ngày", stamps print no date.
+- Undated stays count for map, coverage and passport stamps; they are left out of "Theo năm" and first/last visit dates, and sort after dated visits.
+- `npm run typecheck` pass · `npm run lint` pass · `npm test` 55/55 pass (2 new in tests/date-unknown.test.ts) · web export builds.
+- Playwright phone 390px (tests/e2e/date-unknown.js): pick Huế + "Không rõ ngày" → Home shows "Không rõ ngày", stats "Theo năm" empty; zero console errors. flow.js, intake.js, extra.js re-run: pass.
+
 ## Not verified
 - Real iPhone Safari / Android Chrome (storage eviction, Add to Home Screen, geolocation prompt, HEIC display).
 - Owner's Windows machine build.
@@ -47,4 +55,4 @@ S08 web release steps prepared, publishing awaits the owner.
 - Licensed dataset for the 34 provinces (post 07/2025) to add as a new geography version.
 - Bundle ID / Apple Developer only if a native iOS app is wanted later.
 
-Next task: owner tries the AI assistant with their own key on the live site (S11-05); host check of sign-in + two-device sync (S09-05); owner acceptance on real devices (S08-03).
+Next task: owner records undated Vietnam provinces after deploy (S12-02); owner tries the AI assistant with their own key on the live site (S11-05); host check of sign-in + two-device sync (S09-05); owner acceptance on real devices (S08-03).

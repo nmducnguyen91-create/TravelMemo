@@ -94,3 +94,7 @@ Web delivery per ADR-002. Items marked [x] are implemented and verified in the c
 - [x] S11-03 AI journal draft per journey (preview data, edit, save via journal form)
 - [x] S11-04 AI Q&A over travel history and next-destination suggestions
 - [ ] S11-05 Owner check with a real key on the live site
+
+## S12 — Visits without a date
+- [x] S12-01 "Không rõ ngày" option (migration 0005 date_unknown; excluded from per-year stats; no date on stamps)
+- [ ] S12-02 Record the owner's undated Vietnam provinces on the live app

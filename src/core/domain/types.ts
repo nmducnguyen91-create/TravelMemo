@@ -14,7 +14,8 @@ export type VisitKind = 'stay' | 'transit';
 /** How a destination's details were filled in. The user confirms every one; none of them is proof on its own. */
 export const VISIT_SOURCES = ['manual', 'gps', 'photo', 'link'] as const;
 export type VisitSource = (typeof VISIT_SOURCES)[number];
-export type DatePrecision = 'day' | 'month' | 'year';
+/** 'unknown': no date at all (visited many times / cannot remember); stored as date_unknown = 1. */
+export type DatePrecision = 'day' | 'month' | 'year' | 'unknown';
 
 export interface Trip {
   readonly id: string;

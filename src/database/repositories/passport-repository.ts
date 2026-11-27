@@ -78,7 +78,7 @@ export class PassportRepository {
    * revokes ones that no longer apply. Must run inside the caller's transaction. Idempotent.
    */
   async syncVisitStamps(
-    visit: { id: string; localDate: string; datePrecision: 'day' | 'month' | 'year' },
+    visit: { id: string; localDate: string; datePrecision: 'day' | 'month' | 'year' | 'unknown' },
     targets: readonly StampTarget[],
   ): Promise<void> {
     const db = this.ctx.db;

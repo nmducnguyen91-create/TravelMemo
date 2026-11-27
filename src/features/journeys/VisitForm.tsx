@@ -98,7 +98,8 @@ export function VisitForm({
     setBusy(true);
     setErrors({});
     try {
-      await onSubmit({ ...v, localDate, note: v.note || null, timezone: localTimezone() });
+      // With no known date the stored day is only the recording day, used for ordering, never shown.
+      await onSubmit({ ...v, localDate: v.datePrecision === 'unknown' ? todayLocal() : localDate, note: v.note || null, timezone: localTimezone() });
     } catch (e) {
       setErrors(e instanceof ValidationError ? e.fieldErrors : { _: errorMessage(e) });
     } finally {
@@ -137,6 +138,7 @@ export function VisitForm({
       {tripOptions.length ? (
         <SearchSelect label="Thuộc hành trình" options={tripOptions} value={v.tripId} onChange={(t) => set('tripId', t)} placeholder="Gõ tên hành trình" />
       ) : null}
+      {v.datePrecision === 'unknown' ? null : (
       <TextField
         label="Ngày đến"
         value={localDate}
@@ -155,6 +157,7 @@ export function VisitForm({
             : undefined
         }
       />
+      )}
       <AppText variant="caption" tone="secondary">
         Độ chính xác của ngày
       </AppText>
@@ -162,7 +165,13 @@ export function VisitForm({
         <Chip label="Chính xác ngày" selected={v.datePrecision === 'day'} onPress={() => set('datePrecision', 'day')} />
         <Chip label="Chỉ nhớ tháng" selected={v.datePrecision === 'month'} onPress={() => set('datePrecision', 'month')} />
         <Chip label="Chỉ nhớ năm" selected={v.datePrecision === 'year'} onPress={() => set('datePrecision', 'year')} />
+        <Chip label="Không rõ ngày" selected={v.datePrecision === 'unknown'} onPress={() => set('datePrecision', 'unknown')} />
       </View>
+      {v.datePrecision === 'unknown' ? (
+        <AppText variant="caption" tone="secondary">
+          Dùng khi đã đi nhiều lần hoặc không nhớ ngày. Vẫn tính vào bản đồ và đóng dấu hộ chiếu, nhưng không vào thống kê theo năm.
+        </AppText>
+      ) : null}
       <AppText variant="caption" tone="secondary">
         Loại
       </AppText>

@@ -43,7 +43,7 @@ export const visitInputSchema = z
     latitude: z.number().min(-90).max(90).nullable().default(null),
     longitude: z.number().min(-180).max(180).nullable().default(null),
     localDate: isoDate,
-    datePrecision: z.enum(['day', 'month', 'year']).default('day'),
+    datePrecision: z.enum(['day', 'month', 'year', 'unknown']).default('day'),
     timezone: z.string().nullable().default(null),
     kind: z.enum(['stay', 'transit']).default('stay'),
     source: z.enum(VISIT_SOURCES).default('manual'),
