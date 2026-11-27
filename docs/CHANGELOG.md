@@ -20,3 +20,8 @@ V1.0 starter kit: consolidated planning specifications; no app implementation.
 - Migration 0004 (sync_outbox, sync_meta, sync_parked); triggers installed only when sync is turned on.
 - Per-row last-writer-wins sync engine with deferred foreign keys and parking of orphan rows; 6 tests.
 - `firestore.rules` (owner-only, shape-validated), `firebase.json`, `.env.example`; Pages workflow reads Firebase repository variables.
+
+## 2026-11-27 — S11 Settings tab and AI assistant
+- New Settings tab: theme (system/light/dark), AI assistant, device sync, backup and privacy (moved from Library).
+- Optional AI assistant with the owner's own Claude API key (off by default, key stays in this browser): journal drafts from a journey,
+  questions about travel history, next-destination ideas. Data to be sent is always previewable; photos and coordinates are never sent.

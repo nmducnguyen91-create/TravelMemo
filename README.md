@@ -8,7 +8,8 @@ không bắt buộc tài khoản: mặc định mọi dữ liệu chỉ nằm tr
 - **Atlas**: bản đồ thế giới (247 quốc gia/vùng lãnh thổ, góc nhìn Việt Nam gồm Hoàng Sa, Trường Sa) và 63 tỉnh thành; tô màu nơi đã đến; phóng to, kéo, bấm chọn.
 - **Passport**: hộ chiếu Thế giới và Việt Nam, mỗi điểm đến xác nhận là một con dấu; tải con dấu dạng SVG.
 - **Journeys**: hành trình, điểm đến (thủ công hoặc GPS), quá cảnh, người đi cùng, dòng thời gian.
-- **Library**: ảnh, nhật ký (có tìm kiếm), người đi cùng, thống kê trọn đời, đồng bộ thiết bị (tuỳ chọn), sao lưu/khôi phục (có mã hoá), quyền riêng tư.
+- **Library**: ảnh, nhật ký (có tìm kiếm), người đi cùng, thống kê trọn đời, Trợ lý AI.
+- **Settings**: giao diện sáng/tối, Trợ lý AI (khoá Claude của bạn, tắt mặc định), đồng bộ thiết bị (tuỳ chọn), sao lưu/khôi phục (có mã hoá), quyền riêng tư.
 
 ## Chạy trên máy (Windows PowerShell)
 1. Cài Node.js 22 LTS (>= 22.13) và Git.
@@ -23,6 +24,12 @@ không bắt buộc tài khoản: mặc định mọi dữ liệu chỉ nằm tr
 3. Tên miền chạy app phải nằm trong Firebase → Authentication → Settings → Authorized domains.
 4. Luật bảo mật nằm ở `firestore.rules` (đã đăng lên project). Chi tiết: docs/decisions/ADR-003.
 
+## Trợ lý AI (tuỳ chọn)
+1. Tạo khoá API tại console.anthropic.com → API Keys (nên đặt giới hạn chi tiêu cho khoá).
+2. Trong app: Settings → Khoá API và mô hình → dán khoá → Lưu khoá → Kiểm tra khoá → Bật.
+3. Dùng: Library → Trợ lý AI (hỏi đáp, gợi ý điểm đến), hoặc nút “✨ Viết nhật ký bằng AI” trong một hành trình.
+Khoá chỉ nằm trong trình duyệt đó (không sao lưu, không đồng bộ). Mỗi lần gửi đều xem trước được dữ liệu; không gửi ảnh hay toạ độ.
+
 ## Đưa lên GitHub Pages
 1. Tạo repo trên GitHub, đẩy code lên.
 2. Settings → Pages → Source: **GitHub Actions**.
@@ -31,12 +38,12 @@ Trang web không chứa dữ liệu của ai; dữ liệu nằm trong trình duy
 
 ## Lưu ý quan trọng về dữ liệu
 - Trình duyệt có thể xoá dữ liệu trang web (xoá lịch sử, thiếu dung lượng, Safari sau 7 ngày không dùng nếu chưa thêm vào Màn hình chính).
-  **Hãy sao lưu sau mỗi chuyến đi** (Library → Sao lưu và khôi phục) và cất tệp ở nơi an toàn.
+  **Hãy sao lưu sau mỗi chuyến đi** (Settings → Sao lưu và khôi phục) và cất tệp ở nơi an toàn.
 - Trên iPhone: Safari → Chia sẻ → **Thêm vào Màn hình chính** để dùng như app và giữ dữ liệu tốt hơn.
 - Bản sao lưu mã hoá không thể mở nếu quên mật khẩu.
 
 ## Tài liệu
-docs/PRD, SCREEN_SPEC, DATABASE_SPEC, ARCHITECTURE, decisions/ADR-001 (nền tảng), **decisions/ADR-002 (chuyển sang web app)**, **decisions/ADR-003 (đồng bộ Firebase)**,
+docs/PRD, SCREEN_SPEC, DATABASE_SPEC, ARCHITECTURE, decisions/ADR-001 (nền tảng), **decisions/ADR-002 (chuyển sang web app)**, **decisions/ADR-003 (đồng bộ Firebase)**, **decisions/ADR-004 (tab Cài đặt và Trợ lý AI)**,
 PROJECT_STATE (trạng thái đã kiểm chứng), KNOWN_ISSUES, TESTING_RELEASE, tests/e2e/README.
 
 ## Cấu trúc code

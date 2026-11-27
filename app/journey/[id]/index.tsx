@@ -2,8 +2,10 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { useData } from '@/app-runtime/AppProvider';
+import { useAiSettings } from '@/app-runtime/ai-settings';
 import { formatDate, formatRange } from '@/app-runtime/format';
 import { countryName, provinceName } from '@/app-runtime/geography';
+import { aiReady } from '@/core/ai/ai-settings';
 import { TRIP_STATUS_LABEL } from '@/core/domain/types';
 import { AppText, Button, Card, EmptyState, ErrorState, ListRow, LoadingState, Screen, spacing, useTheme } from '@/design-system';
 import { Section } from '@/features/common/Section';
@@ -19,6 +21,7 @@ type TimelineItem =
 export default function JourneyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
+  const aiOn = useAiSettings((st) => aiReady(st.settings));
   const data = useData(
     async (app) => ({
       trip: await app.trips.get(id),
@@ -59,6 +62,7 @@ export default function JourneyDetailScreen() {
         <Button label="+ Điểm đến" onPress={() => router.push({ pathname: '/visit/new', params: { tripId: id } })} />
         <Button label="+ Nhật ký" variant="secondary" onPress={() => router.push({ pathname: '/journal/new', params: { tripId: id } })} />
         <Button label="Sửa" variant="secondary" onPress={() => router.push(`/journey/${id}/edit`)} />
+        {aiOn ? <Button label="✨ Viết nhật ký bằng AI" variant="secondary" onPress={() => router.push(`/ai/journey/${id}`)} /> : null}
       </View>
       {companions.length ? (
         <AppText tone="secondary">Đi cùng: {companions.map((c) => c.name).join(', ')}</AppText>

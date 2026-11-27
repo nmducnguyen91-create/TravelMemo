@@ -102,7 +102,7 @@ const URL = 'http://localhost:8081';
   console.log('RELOAD_OK', afterReload);
 
   step('backup export');
-  await page.goto(URL + '/library/backup');
+  await page.goto(URL + '/settings/backup');
   await page.getByLabel('Mật khẩu (ít nhất 8 ký tự)').locator('visible=true').first().fill('travel-2026');
   await page.getByLabel('Nhập lại mật khẩu').locator('visible=true').first().fill('travel-2026');
   const [dl] = await Promise.all([page.waitForEvent('download'), page.getByText('Tải bản sao lưu').locator('visible=true').first().click()]);
@@ -114,7 +114,7 @@ const URL = 'http://localhost:8081';
   const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
   const p2 = await ctx2.newPage();
   p2.on('pageerror', (e) => errors.push('P2 ' + e.message));
-  await p2.goto(URL + '/library/backup');
+  await p2.goto(URL + '/settings/backup');
   await p2.getByText('Chọn tệp sao lưu').locator('visible=true').first().waitFor();
   const [ch] = await Promise.all([p2.waitForEvent('filechooser'), p2.getByText('Chọn tệp sao lưu').locator('visible=true').first().click()]);
   await ch.setFiles(archive);

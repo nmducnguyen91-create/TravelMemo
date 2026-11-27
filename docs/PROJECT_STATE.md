@@ -1,5 +1,5 @@
 # Project state
-Updated 2026-11-27 (S10 linked data entry). Delivery: responsive web app (ADR-002). Sprints S00–S07 implemented and verified in the cloud;
+Updated 2026-11-27 (S11 Settings tab and AI assistant). Delivery: responsive web app (ADR-002). Sprints S00–S07 implemented and verified in the cloud;
 S08 web release steps prepared, publishing awaits the owner.
 
 ## Verified (2026-11-25)
@@ -27,6 +27,16 @@ S08 web release steps prepared, publishing awaits the owner.
 - Playwright phone 390px (tests/e2e/intake.js): journey + 2 destinations in one form, link paste, date default, photo GPS suggestion → confirm → no longer suggested, `/share` pre-fill; zero external requests, zero console errors. flow.js and extra.js re-run: pass.
 - Not verified: Web Share Target on a real Android phone (needs the installed PWA; iOS Safari does not support share targets, use copy + paste); HEIC photos (EXIF read for JPEG only); iOS photo picker may strip GPS unless "Location" is enabled in its options.
 
+## Settings tab and AI assistant (S11, ADR-004) — 2026-11-27
+- Sixth tab **Settings**: light/dark/system theme (per browser), AI assistant, sync, backup, privacy (moved from Library; routes now `/settings/*`).
+- AI (off by default, owner's own Claude key in localStorage, never in backup or sync): Q&A over travel history, next-destination ideas,
+  journal draft per journey (edited and saved through the normal journal form). Exact text to send is previewable; no photos or coordinates.
+- `npm run typecheck` pass · `npm run lint` pass · `npm test` 53/53 pass (5 new in tests/ai.test.ts) · web export builds.
+- Playwright phone 390px + desktop 1280px (tests/e2e/settings-ai.js, Anthropic mocked with page.route): 6 tabs, theme persists, key validation/masking,
+  key test, AI off → no request and no AI button, draft → save journal, Q&A, suggestions, delete key; request carries the key as Bearer auth, model,
+  fallbacks and no coordinates; zero other external requests, zero console errors. flow.js, extra.js, intake.js re-run: pass.
+- Not verified: a real call to api.anthropic.com with a real key (no key in the cloud; mocked), real-phone keyboard behaviour on the key field.
+
 ## Not verified
 - Real iPhone Safari / Android Chrome (storage eviction, Add to Home Screen, geolocation prompt, HEIC display).
 - Owner's Windows machine build.
@@ -37,4 +47,4 @@ S08 web release steps prepared, publishing awaits the owner.
 - Licensed dataset for the 34 provinces (post 07/2025) to add as a new geography version.
 - Bundle ID / Apple Developer only if a native iOS app is wanted later.
 
-Next task: host an HTTPS build and verify sign-in + two-device sync (S09-05); then owner acceptance on real devices (S08-03).
+Next task: owner tries the AI assistant with their own key on the live site (S11-05); host check of sign-in + two-device sync (S09-05); owner acceptance on real devices (S08-03).

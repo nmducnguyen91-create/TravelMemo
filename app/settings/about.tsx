@@ -14,6 +14,7 @@ export default function AboutScreen() {
         <Card>
           <AppText>• Không bắt buộc tài khoản, không quảng cáo, không đo lường hành vi.</AppText>
           <AppText>• Mặc định mọi dữ liệu (hành trình, vị trí, ảnh, nhật ký) chỉ lưu trong trình duyệt trên máy này. Chỉ khi bạn tự bật “Đồng bộ thiết bị”, dữ liệu (trừ ảnh gốc) mới được gửi lên Firebase dưới tài khoản Google của bạn.</AppText>
+          <AppText>• Trợ lý AI tắt mặc định. Khi bạn tự thêm khoá Claude, bật lên và bấm gửi, nội dung hiển thị trong mục “Xem dữ liệu sẽ gửi” mới được gửi thẳng tới Anthropic. Không gửi ảnh hay toạ độ. Khoá chỉ lưu trong trình duyệt này, không nằm trong bản sao lưu và không được đồng bộ.</AppText>
           <AppText>• Vị trí chỉ được lấy một lần khi bạn bấm “Dùng vị trí hiện tại”. Không theo dõi nền.</AppText>
           <AppText>• Ảnh chỉ được sao chép khi bạn chọn. Ảnh gốc của bạn không bao giờ bị xoá hay sửa.</AppText>
           <AppText>
