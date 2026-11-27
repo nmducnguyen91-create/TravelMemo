@@ -11,7 +11,9 @@ export const TRIP_STATUS_LABEL: Record<TripStatus, string> = {
 };
 
 export type VisitKind = 'stay' | 'transit';
-export type VisitSource = 'manual' | 'gps';
+/** How a destination's details were filled in. The user confirms every one; none of them is proof on its own. */
+export const VISIT_SOURCES = ['manual', 'gps', 'photo', 'link'] as const;
+export type VisitSource = (typeof VISIT_SOURCES)[number];
 export type DatePrecision = 'day' | 'month' | 'year';
 
 export interface Trip {

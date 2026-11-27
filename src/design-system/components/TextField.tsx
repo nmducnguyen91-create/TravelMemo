@@ -7,7 +7,7 @@ import { AppText } from './AppText';
 export interface TextFieldProps extends Omit<TextInputProps, 'style'> {
   readonly label: string;
   readonly error?: string | undefined;
-  readonly hint?: string;
+  readonly hint?: string | undefined;
 }
 
 export function TextField({ label, error, hint, multiline, ...rest }: TextFieldProps) {

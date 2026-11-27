@@ -7,6 +7,7 @@ npx expo export --platform web
 node tests/e2e/serve.js "$PWD/dist" 8081 &
 node tests/e2e/flow.js  <out-dir>   # out-dir needs photo1.jpg and photo2.png (any small images)
 node tests/e2e/extra.js <out-dir>
+node tests/e2e/intake.js <out-dir>   # S10: journey + destinations, Maps link, photo GPS suggestions, share target
 ```
 
 flow.js: journey CRUD, visits (Việt Nam provinces, abroad, transit), journal, photo import and duplicate detection,

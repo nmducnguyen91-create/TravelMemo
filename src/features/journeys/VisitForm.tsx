@@ -2,11 +2,14 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useApp, useData } from '@/app-runtime/AppProvider';
-import { errorMessage, localTimezone } from '@/app-runtime/format';
-import { countriesSorted, countryName, provincesSorted, provinceName } from '@/app-runtime/geography';
-import type { DatePrecision, VisitKind } from '@/core/domain/types';
+import { errorMessage, formatRange, localTimezone, todayLocal } from '@/app-runtime/format';
+import { countryName, provinceName } from '@/app-runtime/geography';
+import type { DatePrecision, VisitKind, VisitSource } from '@/core/domain/types';
 import { ValidationError, type VisitInput } from '@/core/domain/validation';
+import { defaultVisitDate, isOutsideTrip } from '@/core/intake/visit-date';
 import { AppText, Button, Card, Chip, SearchSelect, spacing, TextField } from '@/design-system';
+
+import { PlaceFields } from './PlaceFields';
 
 export interface VisitFormValue {
   tripId: string | null;
@@ -18,12 +21,9 @@ export interface VisitFormValue {
   localDate: string;
   datePrecision: DatePrecision;
   kind: VisitKind;
-  source: 'manual' | 'gps';
+  source: VisitSource;
   note: string;
 }
-
-const countryOptions = countriesSorted.map((r) => ({ value: r.code, label: r.nameVi, hint: r.name }));
-const provinceOptions = provincesSorted.map((r) => ({ value: r.code, label: r.nameVi, hint: r.name }));
 
 type GpsState = { kind: 'idle' } | { kind: 'locating' } | { kind: 'error'; message: string } | { kind: 'found'; accuracy: number };
 
@@ -31,19 +31,35 @@ export function VisitForm({
   initial,
   submitLabel,
   onSubmit,
+  autoDate = false,
+  notice,
 }: {
   readonly initial: VisitFormValue;
   readonly submitLabel: string;
   readonly onSubmit: (input: VisitInput) => Promise<void>;
+  /** Fill the arrival date from the selected journey until the user edits it (new destinations). */
+  readonly autoDate?: boolean;
+  /** Shown above the form, e.g. where pre-filled details came from. */
+  readonly notice?: string | null;
 }) {
   const { app } = useApp();
   const [v, setV] = useState(initial);
+  const [dateTouched, setDateTouched] = useState(!autoDate);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [gps, setGps] = useState<GpsState>({ kind: 'idle' });
   const trips = useData((a) => a.trips.list({ includeArchived: true }));
+  const tripVisits = useData(async (a) => (v.tripId ? a.visits.forTrip(v.tripId) : []), [v.tripId]);
   const set = <K extends keyof VisitFormValue>(k: K, val: VisitFormValue[K]) => setV((s) => ({ ...s, [k]: val }));
   const tripOptions = useMemo(() => (trips.data ?? []).map((t) => ({ value: t.id, label: t.title })), [trips.data]);
+  const trip = useMemo(() => (trips.data ?? []).find((t) => t.id === v.tripId) ?? null, [trips.data, v.tripId]);
+
+  // Arrival date follows the journey until the user types a date of their own.
+  const lastVisitDate = useMemo(() => {
+    const dates = (tripVisits.data ?? []).map((x) => x.localDate).sort();
+    return dates.length ? dates[dates.length - 1]! : null;
+  }, [tripVisits.data]);
+  const localDate = dateTouched ? v.localDate : defaultVisitDate(trip, todayLocal(), lastVisitDate);
 
   /** Foreground, one-shot location. Denied or unavailable falls back to manual selection (TC04). */
   const locate = () => {
@@ -82,7 +98,7 @@ export function VisitForm({
     setBusy(true);
     setErrors({});
     try {
-      await onSubmit({ ...v, note: v.note || null, timezone: localTimezone() });
+      await onSubmit({ ...v, localDate, note: v.note || null, timezone: localTimezone() });
     } catch (e) {
       setErrors(e instanceof ValidationError ? e.fieldErrors : { _: errorMessage(e) });
     } finally {
@@ -90,11 +106,26 @@ export function VisitForm({
     }
   };
 
+  const outside = v.datePrecision === 'day' && isOutsideTrip(trip, localDate);
+
   return (
     <View style={styles.form}>
-      <TextField label="Tên địa điểm" value={v.placeName} onChangeText={(t) => set('placeName', t)} error={errors.placeName} placeholder="Ví dụ: Hồ Gươm" />
+      {notice ? (
+        <AppText tone="secondary" accessibilityLiveRegion="polite">
+          {notice}
+        </AppText>
+      ) : null}
       <Card>
-        <AppText variant="heading">Vị trí</AppText>
+        <AppText variant="heading">Địa điểm</AppText>
+        <PlaceFields
+          value={v}
+          onChange={(p) => setV((s) => ({ ...s, ...p }))}
+          onPhotoDate={(d) => {
+            setDateTouched(true);
+            set('localDate', d);
+          }}
+          errors={errors}
+        />
         <Button label={gps.kind === 'locating' ? 'Đang định vị…' : 'Dùng vị trí hiện tại'} variant="secondary" loading={gps.kind === 'locating'} onPress={locate} />
         {gps.kind === 'error' ? <AppText tone="error" accessibilityLiveRegion="polite">{gps.message}</AppText> : null}
         {gps.kind === 'found' ? (
@@ -102,35 +133,28 @@ export function VisitForm({
             Đã định vị (sai số khoảng {gps.accuracy} m): {[provinceName(v.provinceCode), countryName(v.countryCode)].filter(Boolean).join(', ') || 'chưa rõ quốc gia'}. Kiểm tra lại trước khi lưu.
           </AppText>
         ) : null}
-        {v.latitude !== null && v.longitude !== null ? (
-          <AppText variant="caption" tone="secondary">
-            Toạ độ gốc: {v.latitude}, {v.longitude} (được giữ nguyên)
-          </AppText>
-        ) : null}
-        <SearchSelect
-          label="Quốc gia"
-          options={countryOptions}
-          value={v.countryCode}
-          onChange={(c) => setV((s) => ({ ...s, countryCode: c, provinceCode: c === 'VNM' ? s.provinceCode : null }))}
-          placeholder="Gõ để tìm, ví dụ: nhat ban"
-          error={errors.countryCode}
-        />
-        {v.countryCode === 'VNM' ? (
-          <SearchSelect
-            label="Tỉnh / thành phố (63 tỉnh thành, ranh giới trước 07/2025)"
-            options={provinceOptions}
-            value={v.provinceCode}
-            onChange={(c) => set('provinceCode', c)}
-            placeholder="Gõ để tìm, ví dụ: da nang"
-            error={errors.provinceCode}
-          />
-        ) : null}
       </Card>
-      <View style={styles.row}>
-        <View style={styles.flex}>
-          <TextField label="Ngày đến" value={v.localDate} onChangeText={(t) => set('localDate', t)} placeholder="YYYY-MM-DD" error={errors.localDate} inputMode="numeric" />
-        </View>
-      </View>
+      {tripOptions.length ? (
+        <SearchSelect label="Thuộc hành trình" options={tripOptions} value={v.tripId} onChange={(t) => set('tripId', t)} placeholder="Gõ tên hành trình" />
+      ) : null}
+      <TextField
+        label="Ngày đến"
+        value={localDate}
+        onChangeText={(t) => {
+          setDateTouched(true);
+          set('localDate', t);
+        }}
+        placeholder="YYYY-MM-DD"
+        error={errors.localDate}
+        inputMode="numeric"
+        hint={
+          trip && (trip.startDate || trip.endDate)
+            ? outside
+              ? `Ngày này nằm ngoài hành trình (${formatRange(trip.startDate, trip.endDate)}). Vẫn lưu được nếu đúng.`
+              : `Hành trình: ${formatRange(trip.startDate, trip.endDate)}${dateTouched ? '' : ' · ngày được điền theo hành trình'}`
+            : undefined
+        }
+      />
       <AppText variant="caption" tone="secondary">
         Độ chính xác của ngày
       </AppText>
@@ -151,9 +175,6 @@ export function VisitForm({
           Quá cảnh được ghi vào dòng thời gian nhưng không tính vào bản đồ, thống kê và không đóng dấu hộ chiếu.
         </AppText>
       ) : null}
-      {tripOptions.length ? (
-        <SearchSelect label="Thuộc hành trình" options={tripOptions} value={v.tripId} onChange={(t) => set('tripId', t)} placeholder="Gõ tên hành trình" />
-      ) : null}
       <TextField label="Ghi chú" value={v.note} onChangeText={(t) => set('note', t)} multiline />
       {errors._ ? <AppText tone="error">{errors._}</AppText> : null}
       <Button label={submitLabel} onPress={() => void submit()} loading={busy} />
@@ -163,7 +184,5 @@ export function VisitForm({
 
 const styles = StyleSheet.create({
   form: { gap: spacing.md },
-  row: { flexDirection: 'row', gap: spacing.md },
-  flex: { flex: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { TRIP_STATUSES } from './types.ts';
+import { TRIP_STATUSES, VISIT_SOURCES } from './types.ts';
 
 const isoDate = z
   .string()
@@ -46,7 +46,7 @@ export const visitInputSchema = z
     datePrecision: z.enum(['day', 'month', 'year']).default('day'),
     timezone: z.string().nullable().default(null),
     kind: z.enum(['stay', 'transit']).default('stay'),
-    source: z.enum(['manual', 'gps']).default('manual'),
+    source: z.enum(VISIT_SOURCES).default('manual'),
     note: optionalText(2000),
   })
   .refine((v) => v.countryCode !== null || (v.latitude !== null && v.longitude !== null), {
