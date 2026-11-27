@@ -3,6 +3,7 @@
 const { chromium } = require('playwright');
 const fs = require('node:fs');
 const path = require('node:path');
+const { Buffer } = require('node:buffer');
 const OUT = process.argv[2];
 const URL = 'http://localhost:8081';
 
