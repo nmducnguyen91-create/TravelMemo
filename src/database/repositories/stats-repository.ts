@@ -28,7 +28,8 @@ export async function lifetimeStats(ctx: RepoContext, world: GeoDataset, vietnam
   );
   const totals = await first<{ visits: number; places: number; first_date: string | null; last_date: string | null }>(
     db,
-    `SELECT COUNT(*) AS visits, COUNT(DISTINCT v.place_id) AS places, MIN(v.local_date) AS first_date, MAX(v.local_date) AS last_date
+    `SELECT COUNT(*) AS visits, COUNT(DISTINCT v.place_id) AS places, MIN(CASE WHEN v.date_unknown = 0 THEN v.local_date END) AS first_date,
+       MAX(CASE WHEN v.date_unknown = 0 THEN v.local_date END) AS last_date
      FROM visits v WHERE ${CONFIRMED_STAY}`,
   );
   const scalar = async (sql: string) => (await first<{ n: number }>(db, sql))?.n ?? 0;
@@ -37,7 +38,7 @@ export async function lifetimeStats(ctx: RepoContext, world: GeoDataset, vietnam
        COUNT(DISTINCT CASE WHEN g.kind = 'country' THEN gv.geometry_ref END) AS countries
      FROM visits v LEFT JOIN visit_regions vr ON vr.visit_id = v.id
      LEFT JOIN geo_region_versions gv ON gv.id = vr.region_version_id LEFT JOIN geo_regions g ON g.id = gv.region_id
-     WHERE ${CONFIRMED_STAY} GROUP BY year ORDER BY year`,
+     WHERE ${CONFIRMED_STAY} AND v.date_unknown = 0 GROUP BY year ORDER BY year`,
     [],
   );
   return {

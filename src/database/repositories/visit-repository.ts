@@ -7,7 +7,8 @@ interface VisitRow {
   place_id: string;
   place_name: string;
   local_date: string;
-  date_precision: DatePrecision;
+  date_precision: Exclude<DatePrecision, 'unknown'>;
+  date_unknown: number;
   timezone: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -24,7 +25,7 @@ const toVisit = (r: VisitRow): Visit => ({
   placeId: r.place_id,
   placeName: r.place_name,
   localDate: r.local_date,
-  datePrecision: r.date_precision,
+  datePrecision: r.date_unknown ? 'unknown' : r.date_precision,
   timezone: r.timezone,
   latitude: r.latitude,
   longitude: r.longitude,
@@ -36,7 +37,7 @@ const toVisit = (r: VisitRow): Visit => ({
 });
 
 const SELECT = `
-SELECT v.id, v.trip_id, v.place_id, p.name AS place_name, v.local_date, v.date_precision, v.timezone,
+SELECT v.id, v.trip_id, v.place_id, p.name AS place_name, v.local_date, v.date_precision, v.date_unknown, v.timezone,
   v.latitude, v.longitude, v.source, v.kind, v.note,
   (SELECT gv.geometry_ref FROM visit_regions vr JOIN geo_region_versions gv ON gv.id = vr.region_version_id
      JOIN geo_regions g ON g.id = gv.region_id WHERE vr.visit_id = v.id AND g.kind = 'country' LIMIT 1) AS country_code,
@@ -52,7 +53,7 @@ export class VisitRepository {
 
   async forTrip(tripId: string): Promise<Visit[]> {
     const rows = await this.ctx.db.getAllAsync<VisitRow>(
-      `${SELECT} WHERE v.trip_id = ? AND v.deleted_at IS NULL AND v.confirmed = 1 ORDER BY v.local_date, v.created_at`,
+      `${SELECT} WHERE v.trip_id = ? AND v.deleted_at IS NULL AND v.confirmed = 1 ORDER BY v.date_unknown, v.local_date, v.created_at`,
       [tripId],
     );
     return rows.map(toVisit);
@@ -60,7 +61,7 @@ export class VisitRepository {
 
   async recent(limit = 20): Promise<Visit[]> {
     const rows = await this.ctx.db.getAllAsync<VisitRow>(
-      `${SELECT} WHERE v.deleted_at IS NULL AND v.confirmed = 1 ORDER BY v.local_date DESC, v.created_at DESC LIMIT ?`,
+      `${SELECT} WHERE v.deleted_at IS NULL AND v.confirmed = 1 ORDER BY v.date_unknown, v.local_date DESC, v.created_at DESC LIMIT ?`,
       [limit],
     );
     return rows.map(toVisit);
@@ -71,7 +72,7 @@ export class VisitRepository {
       `${SELECT} WHERE v.deleted_at IS NULL AND v.confirmed = 1 AND EXISTS (
          SELECT 1 FROM visit_regions vr JOIN geo_region_versions gv ON gv.id = vr.region_version_id
          JOIN geo_regions g ON g.id = gv.region_id WHERE vr.visit_id = v.id AND g.kind = ? AND gv.geometry_ref = ?)
-       ORDER BY v.local_date DESC`,
+       ORDER BY v.date_unknown, v.local_date DESC`,
       [kind, code],
     );
     return rows.map(toVisit);

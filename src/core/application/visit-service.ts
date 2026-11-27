@@ -18,6 +18,11 @@ export interface ResolvedRegions {
  * Visit confirmation, edit and removal. Each is one transaction covering the visit, its
  * region links and its passport stamps, so coverage, stamps and statistics never disagree.
  */
+/** The visits.date_precision column only accepts day/month/year; "unknown" is stored as date_unknown = 1. */
+function storedPrecision(p: ValidVisitInput['datePrecision']): 'day' | 'month' | 'year' {
+  return p === 'unknown' ? 'year' : p;
+}
+
 export class VisitService {
   private readonly ctx: RepoContext;
   private readonly geo: Geography;
@@ -49,9 +54,10 @@ export class VisitService {
       );
       await this.ctx.db.runAsync(
         `INSERT INTO visits(id, profile_id, trip_id, place_id, occurred_at, local_date, timezone, latitude, longitude,
-           source, confirmed, kind, note, date_precision, created_at)
-         VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)`,
-        [id, PROFILE_ID, v.tripId, placeId, v.localDate, v.timezone, v.latitude, v.longitude, v.source, v.kind, v.note, v.datePrecision, now],
+           source, confirmed, kind, note, date_precision, date_unknown, created_at)
+         VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)`,
+        [id, PROFILE_ID, v.tripId, placeId, v.localDate, v.timezone, v.latitude, v.longitude, v.source, v.kind, v.note,
+          storedPrecision(v.datePrecision), v.datePrecision === 'unknown' ? 1 : 0, now],
       );
       await this.linkRegionsAndStamps(id, v);
     });
@@ -70,9 +76,10 @@ export class VisitService {
         [v.placeName, v.latitude, v.longitude, v.countryCode, row.place_id],
       );
       await this.ctx.db.runAsync(
-        `UPDATE visits SET trip_id = ?, local_date = ?, date_precision = ?, timezone = ?, kind = ?, note = ?,
+        `UPDATE visits SET trip_id = ?, local_date = ?, date_precision = ?, date_unknown = ?, timezone = ?, kind = ?, note = ?,
            latitude = COALESCE(?, latitude), longitude = COALESCE(?, longitude) WHERE id = ?`,
-        [v.tripId, v.localDate, v.datePrecision, v.timezone, v.kind, v.note, v.latitude, v.longitude, id],
+        [v.tripId, v.localDate, storedPrecision(v.datePrecision), v.datePrecision === 'unknown' ? 1 : 0, v.timezone, v.kind, v.note,
+          v.latitude, v.longitude, id],
       );
       await this.ctx.db.runAsync('DELETE FROM visit_regions WHERE visit_id = ?', [id]);
       await this.linkRegionsAndStamps(id, v);
@@ -112,9 +119,9 @@ export class VisitService {
     );
     await this.ctx.db.withTransactionAsync(async () => {
       for (const { id } of visits) {
-        const v = await first<{ local_date: string; date_precision: 'day' | 'month' | 'year'; kind: string }>(
+        const v = await first<{ local_date: string; date_precision: 'day' | 'month' | 'year'; date_unknown: number; kind: string }>(
           this.ctx.db,
-          'SELECT local_date, date_precision, kind FROM visits WHERE id = ?',
+          'SELECT local_date, date_precision, date_unknown, kind FROM visits WHERE id = ?',
           [id],
         );
         const codes = await this.ctx.db.getAllAsync<{ kind: string; code: string }>(
@@ -126,7 +133,7 @@ export class VisitService {
         const country = codes.find((c) => c.kind === 'country')?.code ?? null;
         const province = codes.find((c) => c.kind === 'vn-province')?.code ?? null;
         await this.passports.syncVisitStamps(
-          { id, localDate: v.local_date, datePrecision: v.date_precision },
+          { id, localDate: v.local_date, datePrecision: v.date_unknown ? 'unknown' : v.date_precision },
           v.kind === 'stay' ? this.targets(country, province) : [],
         );
       }

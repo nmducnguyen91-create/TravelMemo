@@ -30,7 +30,8 @@ export const STAMP_INKS = ['#173B34', '#A33D3D', '#2F4F7F', '#7A4E1D', '#5B3F7A'
 
 export const STAMPS_PER_PAGE = 6;
 
-export function formatStampDate(localDate: string, precision: 'day' | 'month' | 'year'): string {
+export function formatStampDate(localDate: string, precision: 'day' | 'month' | 'year' | 'unknown'): string {
+  if (precision === 'unknown') return '';
   const [y, m, d] = localDate.split('-');
   if (precision === 'year') return `${y}`;
   if (precision === 'month') return `${m}/${y}`;
@@ -41,7 +42,7 @@ export interface StampDesignInput {
   readonly regionKey: string;
   readonly regionName: string;
   readonly localDate: string;
-  readonly datePrecision: 'day' | 'month' | 'year';
+  readonly datePrecision: 'day' | 'month' | 'year' | 'unknown';
   readonly category: 'country' | 'province';
 }
 

@@ -1,6 +1,7 @@
 import type { DatePrecision } from '../core/domain/types';
 
 export function formatDate(iso: string | null | undefined, precision: DatePrecision = 'day'): string {
+  if (precision === 'unknown') return 'Không rõ ngày';
   if (!iso) return '';
   const [y, m, d] = iso.slice(0, 10).split('-');
   if (precision === 'year') return `${y}`;
