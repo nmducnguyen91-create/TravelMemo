@@ -18,7 +18,7 @@ export interface CloudSyncState {
 }
 
 export const useCloudSync = create<CloudSyncState>(() => ({
-  available: cloud.available(),
+  available: false,
   account: null,
   linked: null,
   phase: 'off',
@@ -98,8 +98,9 @@ export function startCloudSync(db: SqlDriver, schemaVersion: number, onRemoteApp
       });
     }
   };
-  void refresh().then((linked) => {
-    if (linked) watch();
+  void cloud.init().then(async (available) => {
+    set({ available });
+    if (await refresh()) watch();
   });
 
   return {
