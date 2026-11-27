@@ -1,0 +1,36 @@
+rules_version = '2';
+
+// TravelMemo optional sync (ADR-003). Each owner can only read and write their own rows.
+// Layout: users/{uid}/rows/{table~key}  { t, k, d, u, dev, s, v }
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function validRow() {
+      let r = request.resource.data;
+      return r.keys().hasOnly(['t', 'k', 'd', 'u', 'dev', 's', 'v'])
+        && r.keys().hasAll(['t', 'k', 'd', 'u', 'dev', 's', 'v'])
+        && r.t in ['profiles', 'companions', 'places', 'trips', 'trip_companions', 'visits',
+                   'visit_regions', 'passports', 'passport_stamps', 'media_assets', 'journal_entries']
+        && r.k is list && r.k.size() > 0 && r.k.size() <= 4
+        && (r.d == null || r.d is map)
+        && r.u is string && r.u.size() <= 40
+        && r.dev is string && r.dev.size() <= 64
+        && r.s == request.time
+        && r.v is int;
+    }
+
+    match /users/{uid}/rows/{rowId} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && rowId.size() <= 300 && validRow();
+      allow delete: if isOwner(uid);
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

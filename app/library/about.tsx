@@ -12,8 +12,8 @@ export default function AboutScreen() {
       <Stack.Screen options={{ title: 'Quyền riêng tư và nguồn dữ liệu' }} />
       <Section title="Quyền riêng tư">
         <Card>
-          <AppText>• Không cần tài khoản, không có máy chủ, không quảng cáo, không đo lường hành vi.</AppText>
-          <AppText>• Mọi dữ liệu (hành trình, vị trí, ảnh, nhật ký) chỉ lưu trong trình duyệt trên máy này. Không có gì được tự động gửi đi.</AppText>
+          <AppText>• Không bắt buộc tài khoản, không quảng cáo, không đo lường hành vi.</AppText>
+          <AppText>• Mặc định mọi dữ liệu (hành trình, vị trí, ảnh, nhật ký) chỉ lưu trong trình duyệt trên máy này. Chỉ khi bạn tự bật “Đồng bộ thiết bị”, dữ liệu (trừ ảnh gốc) mới được gửi lên Firebase dưới tài khoản Google của bạn.</AppText>
           <AppText>• Vị trí chỉ được lấy một lần khi bạn bấm “Dùng vị trí hiện tại”. Không theo dõi nền.</AppText>
           <AppText>• Ảnh chỉ được sao chép khi bạn chọn. Ảnh gốc của bạn không bao giờ bị xoá hay sửa.</AppText>
           <AppText>

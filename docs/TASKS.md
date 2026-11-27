@@ -72,3 +72,12 @@ Web delivery per ADR-002. Items marked [x] are implemented and verified in the c
 - [ ] S08-03 Device acceptance
 - [ ] S08-04 Restore rehearsal
 - [ ] S08-05 Owner release approval
+
+## S09 — Multi-device sync (ADR-003)
+- [x] S09-01 Firebase project, Google sign-in, Firestore (Spark, asia-southeast1), rules published
+- [x] S09-02 Outbox migration, trigger-based change tracking, sync engine with LWW and parking
+- [x] S09-03 Firestore remote, Library → Đồng bộ thiết bị screen
+- [x] S09-04 Engine tests (SYNC-01..06)
+- [ ] S09-05 Live sign-in and two-device check on a hosted HTTPS build (needs hosting decision)
+- [ ] S09-06 Photo sync (thumbnails in Firestore or Blaze + Storage; owner decision)
+
