@@ -1,5 +1,5 @@
 # Project state
-Updated 2026-11-27. Delivery: responsive web app (ADR-002). Sprints S00–S07 implemented and verified in the cloud;
+Updated 2026-11-27 (S10 linked data entry). Delivery: responsive web app (ADR-002). Sprints S00–S07 implemented and verified in the cloud;
 S08 web release steps prepared, publishing awaits the owner.
 
 ## Verified (2026-11-25)
@@ -16,6 +16,16 @@ S08 web release steps prepared, publishing awaits the owner.
 - `npm run typecheck` pass · `npm run lint` pass · `npm test` 40/40 pass (6 new sync tests on sql.js with an in-memory remote).
 - Web build bundles the config from `.env.local`; Playwright: no request leaves the origin until sync is turned on; sync screen renders on phone width.
 - Not verified: real Google sign-in and Firestore round trip (cloud proxy blocks apis.google.com). Photos are not synced.
+
+## Linked data entry (S10) — 2026-11-27
+- New destination in a journey: arrival date follows the journey (today if inside it, else the latest stop, else the start) until the user types a date; dates outside the journey get a non-blocking hint.
+- New journey form can carry destinations; journey + destinations are saved in one transaction (`IntakeService.createJourneyWithVisits`).
+- Photos: "Lấy vị trí từ ảnh" in the destination form, and "Gợi ý điểm đến từ vị trí trong ảnh" on a journey (JPEG EXIF GPS + capture date, read on the device). Suggestions only pre-fill the form; photos never create or count as visits.
+- Google Maps: paste a link in any place field (pin/query/viewport URLs give coordinates → country/province; short links give the name and regions matched from the shared address text, never resolved online). PWA `share_target` → `/share` opens the pre-filled destination form.
+- Visit `source` now also records `photo` and `link` (no migration: column has no CHECK).
+- `npm run typecheck` pass · `npm run lint` pass · `npm test` 48/48 pass (8 new in tests/intake.test.ts) · web export builds.
+- Playwright phone 390px (tests/e2e/intake.js): journey + 2 destinations in one form, link paste, date default, photo GPS suggestion → confirm → no longer suggested, `/share` pre-fill; zero external requests, zero console errors. flow.js and extra.js re-run: pass.
+- Not verified: Web Share Target on a real Android phone (needs the installed PWA; iOS Safari does not support share targets, use copy + paste); HEIC photos (EXIF read for JPEG only); iOS photo picker may strip GPS unless "Location" is enabled in its options.
 
 ## Not verified
 - Real iPhone Safari / Android Chrome (storage eviction, Add to Home Screen, geolocation prompt, HEIC display).

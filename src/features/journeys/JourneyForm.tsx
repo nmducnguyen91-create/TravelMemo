@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useData } from '@/app-runtime/AppProvider';
@@ -20,10 +20,13 @@ export function JourneyForm({
   initial,
   submitLabel,
   onSubmit,
+  renderExtra,
 }: {
   readonly initial: JourneyFormValue;
   readonly submitLabel: string;
   readonly onSubmit: (input: TripInput) => Promise<void>;
+  /** Extra fields rendered above the submit button; they receive the current values and errors. */
+  readonly renderExtra?: (ctx: { readonly value: JourneyFormValue; readonly errors: Record<string, string> }) => ReactNode;
 }) {
   const [v, setV] = useState(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -85,6 +88,7 @@ export function JourneyForm({
         )}
       </View>
       <TextField label="Ghi chú" value={v.description} onChangeText={(t) => set('description', t)} multiline error={errors.description} />
+      {renderExtra?.({ value: v, errors })}
       {errors._ ? <AppText tone="error">{errors._}</AppText> : null}
       <Button label={submitLabel} onPress={() => void submit()} loading={busy} />
     </View>

@@ -9,6 +9,7 @@ import { AppText, Button, Card, EmptyState, ErrorState, ListRow, LoadingState, S
 import { Section } from '@/features/common/Section';
 import { ImportPhotosButton } from '@/features/memories/ImportPhotosButton';
 import { PhotoGrid } from '@/features/memories/PhotoGrid';
+import { PhotoSuggestions } from '@/features/journeys/PhotoSuggestions';
 
 type TimelineItem =
   | { kind: 'visit'; date: string; id: string; title: string; subtitle: string; transit: boolean }
@@ -78,6 +79,7 @@ export default function JourneyDetailScreen() {
       </Section>
       <Section title={`Ảnh (${media.length})`} action={<ImportPhotosButton tripId={id} />}>
         {media.length ? <PhotoGrid assets={media} /> : <AppText tone="secondary">Chưa có ảnh. Ảnh được sao chép vào app; ảnh gốc trên máy không bị thay đổi.</AppText>}
+        <PhotoSuggestions tripId={id} photoCount={media.length} />
       </Section>
     </Screen>
   );

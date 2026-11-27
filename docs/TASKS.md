@@ -81,3 +81,9 @@ Web delivery per ADR-002. Items marked [x] are implemented and verified in the c
 - [ ] S09-05 Live sign-in and two-device check on a hosted HTTPS build (needs hosting decision)
 - [ ] S09-06 Photo sync (thumbnails in Firestore or Blaze + Storage; owner decision)
 
+## S10 — Linked data entry
+- [x] S10-01 Arrival date defaults from the journey
+- [x] S10-02 Create a journey with its destinations in one transaction
+- [x] S10-03 Destination suggestions from photo GPS/EXIF (suggestion only)
+- [x] S10-04 Google Maps link paste (coordinates, name, country/province) and PWA share target
+- [ ] S10-05 Check share target on a real Android phone with the installed app

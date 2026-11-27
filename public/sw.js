@@ -1,5 +1,5 @@
 /* TravelMemo offline cache. Same-origin GET requests only; nothing is sent anywhere. */
-const CACHE = 'travelmemo-v1';
+const CACHE = 'travelmemo-v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './sql-wasm-browser.wasm', './manifest.webmanifest'])).then(() => self.skipWaiting()));

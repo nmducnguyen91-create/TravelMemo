@@ -1,5 +1,6 @@
 import type { Geography } from './visit-service.ts';
 import { VisitService } from './visit-service.ts';
+import { IntakeService } from './intake-service.ts';
 import { systemClock, newId, type Clock } from '../ids.ts';
 import type { RepoContext } from '../../database/repositories/base.ts';
 import { CompanionRepository } from '../../database/repositories/companion-repository.ts';
@@ -24,15 +25,20 @@ export function createAppServices(
 ) {
   const ctx: RepoContext = { db, clock: options.clock ?? systemClock, newId: options.newId ?? newId };
   const passports = new PassportRepository(ctx);
+  const trips = new TripRepository(ctx);
+  const visits = new VisitRepository(ctx);
+  const visitService = new VisitService(ctx, geo);
+  const mediaRepo = new MediaRepository(ctx, media);
   return {
     ctx,
     geo,
-    trips: new TripRepository(ctx),
+    trips,
     companions: new CompanionRepository(ctx),
-    visits: new VisitRepository(ctx),
-    visitService: new VisitService(ctx, geo),
+    visits,
+    visitService,
+    intake: new IntakeService(ctx, { world: geo.world, vietnam: geo.vietnam, visits, visitService, trips, media: mediaRepo }),
     passports,
-    media: new MediaRepository(ctx, media),
+    media: mediaRepo,
     journal: new JournalRepository(ctx),
     stats: () => lifetimeStats(ctx, geo.world, geo.vietnam),
     /** Idempotent startup work after migrations: geography datasets and stamp templates. */
